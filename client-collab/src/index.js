@@ -7,7 +7,7 @@ import Store, { Provider } from "./lib/store";
 import { onPatch, applyPatch } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
 
-const socket = socketIOClient(`https://quick-sloth-10.localtunnel.me`);
+const socket = socketIOClient(`http://dfe9fa5a.ngrok.io`);
 
 const store = Store.create({
   clientId: Math.random(1000).toString().split(`.`)[0]
@@ -15,12 +15,17 @@ const store = Store.create({
 
 onPatch(store, patch => {
 	console.log(`Checking patch`, patch);
-  socket.emit(`patching`, patch);
+  socket.emit(`patching`, {
+    ...patch,
+    clientId: store.clientId
+  });
 });
 
 socket.on(`patching client`, data => {
-	console.log(`Hello?`, data);
-	applyPatch(store, data);
+  console.log(`Hello?`, data);
+  if (data.clientId !== store.clientId) {
+    applyPatch(store, data);
+  }
 });
 
 ReactDOM.render(
