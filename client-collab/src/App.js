@@ -7,8 +7,6 @@ import { useStore } from "./lib/store";
 
 import './App.css';
 
-const socket = socketIOClient(`http://localhost:3000`);
-
 const App = () => {
 
 	const [response, setResponse] = useState(0);

@@ -4,8 +4,16 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Store, { Provider } from "./lib/store";
+import { onPatch } from "mobx-state-tree";
+const socket = socketIOClient(`http://localhost:3000`);
 
-const store = Store.create({});
+const store = Store.create({
+  clientId: Math.random(1000).toString().split(`.`)[0]
+});
+
+onPatch(store, patch => {
+
+});
 
 ReactDOM.render(
 <Provider value={store}>

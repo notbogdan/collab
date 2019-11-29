@@ -13,6 +13,7 @@ export function useStore() {
 }
 
 export default types.model(`Store`, {
+  clientId: ``,
   value: ``
 })
 .actions(self => ({
