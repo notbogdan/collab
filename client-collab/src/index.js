@@ -7,11 +7,10 @@ import Store, { Provider } from "./lib/store";
 import { onPatch, applyPatch } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
 
-const socket = socketIOClient(`http://dfe9fa5a.ngrok.io`);
-const uid = () => (Math.random() * 10000).toString().split(`.`)[1];
-const store = Store.create({
-  clientId: uid()
-});
+const socket = socketIOClient(`http://ab20d968.ngrok.io`);
+const store = Store.create({});
+
+window.store = store;
 
 let isHandlingMessage = false;
 
