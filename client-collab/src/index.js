@@ -9,28 +9,24 @@ import socketIOClient from 'socket.io-client';
 
 const socket = socketIOClient(`http://dfe9fa5a.ngrok.io`);
 const uid = () => (Math.random() * 10000).toString().split(`.`)[1];
-
 const store = Store.create({
   clientId: uid()
 });
 
-const patchCache = [];
+let isHandlingMessage = true;
 
 onPatch(store, patch => {
-  const patchId = uid();
-  patchCache.push(patchId);
-  socket.emit(`patching`, {
-    ...patch,
-    patchId: uid(),
-    clientId: store.clientId
-  });
+  if (!isHandlingMessage) {
+    socket.emit(`patching`, {
+      ...patch,
+    });
+  }
 });
 
 socket.on(`patching client`, data => {
-  if (!patchCache.include(data.patchId)) {
-    patchCache.push(data.patchId);
-    applyPatch(store, data);
-  }
+  isHandlingMessage = true;
+  applyPatch(store, data);
+  isHandleMessage = false;
 });
 
 ReactDOM.render(
