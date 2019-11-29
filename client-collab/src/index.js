@@ -26,7 +26,7 @@ onPatch(store, patch => {
 socket.on(`patching client`, data => {
   isHandlingMessage = true;
   applyPatch(store, data);
-  isHandleMessage = false;
+  isHandlingMessage = false;
 });
 
 ReactDOM.render(
