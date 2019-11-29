@@ -8,22 +8,27 @@ import { onPatch, applyPatch } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
 
 const socket = socketIOClient(`http://dfe9fa5a.ngrok.io`);
+const uid = () => (Math.random() * 10000).toString().split(`.`)[1];
 
 const store = Store.create({
-  clientId: (Math.random() * 10000).toString().split(`.`)[1]
+  clientId: uid()
 });
 
+const patchCache = [];
+
 onPatch(store, patch => {
-	console.log(`Checking patch`, patch);
+  const patchId = uid();
+  patchCache.push(patchId);
   socket.emit(`patching`, {
     ...patch,
+    patchId: uid(),
     clientId: store.clientId
   });
 });
 
 socket.on(`patching client`, data => {
-  console.log(`Hello?`, data);
-  if (data.clientId !== store.clientId) {
+  if (!patchCache.include(data.patchId)) {
+    patchCache.push(data.patchId);
     applyPatch(store, data);
   }
 });
