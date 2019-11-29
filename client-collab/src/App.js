@@ -6,10 +6,10 @@ import { useStore } from "./lib/store";
 
 import './App.css';
 
-const App = () => {
+const App = props => {
 
 	const [response, setResponse] = useState(0);
-  const store = useStore();
+	const store = useStore();
   
 	return (
 		<div className="App">

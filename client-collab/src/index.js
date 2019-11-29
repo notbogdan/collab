@@ -4,17 +4,23 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Store, { Provider } from "./lib/store";
-import { onPatch } from "mobx-state-tree";
+import { onPatch, applyPatch } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
 
-const socket = socketIOClient(`http://localhost:3000`);
+const socket = socketIOClient(`https://quick-sloth-10.localtunnel.me`);
 
 const store = Store.create({
   clientId: Math.random(1000).toString().split(`.`)[0]
 });
 
 onPatch(store, patch => {
-  
+	console.log(`Checking patch`, patch);
+  socket.emit(`patching`, patch);
+});
+
+socket.on(`patching client`, data => {
+	console.log(`Hello?`, data);
+	applyPatch(store, data);
 });
 
 ReactDOM.render(

@@ -16,6 +16,10 @@ io.on('connection', function(socket){
 			hello: data2 
 		})
 	});
+
+	socket.on(`patching`, data => {
+		socket.emit(`patching client`, data);
+	})
 });
 
 http.listen(3000, function(){
