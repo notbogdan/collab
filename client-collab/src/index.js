@@ -5,6 +5,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Store, { Provider } from "./lib/store";
 import { onPatch } from "mobx-state-tree";
+import socketIOClient from 'socket.io-client';
+
 const socket = socketIOClient(`http://localhost:3000`);
 
 const store = Store.create({
@@ -12,7 +14,7 @@ const store = Store.create({
 });
 
 onPatch(store, patch => {
-
+  
 });
 
 ReactDOM.render(

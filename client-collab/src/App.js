@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import socketIOClient from 'socket.io-client';
 import { observer, inject } from "mobx-react";
 import { useStore } from "./lib/store";
 
