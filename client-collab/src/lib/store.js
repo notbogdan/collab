@@ -14,10 +14,16 @@ export function useStore() {
 
 export default types.model(`Store`, {
   clientId: ``,
-  value: ``
+  value: ``,
+  textAreaWidth: 200,
+  textAreaHeight: 100
 })
 .actions(self => ({
   setValue(string) {
     self.value = string;
+  },
+  updateTextArea(width, height) {
+    self.textAreaHeight = height;
+    self.textAreaWidth = width;
   }
 }));

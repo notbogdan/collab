@@ -13,7 +13,7 @@ const store = Store.create({
   clientId: uid()
 });
 
-let isHandlingMessage = true;
+let isHandlingMessage = false;
 
 onPatch(store, patch => {
   if (!isHandlingMessage) {
