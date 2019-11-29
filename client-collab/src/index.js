@@ -10,7 +10,7 @@ import socketIOClient from 'socket.io-client';
 const socket = socketIOClient(`http://dfe9fa5a.ngrok.io`);
 
 const store = Store.create({
-  clientId: Math.random(1000).toString().split(`.`)[0]
+  clientId: (Math.random() * 10000).toString().split(`.`)[1]
 });
 
 onPatch(store, patch => {
