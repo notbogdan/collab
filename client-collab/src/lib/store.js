@@ -14,8 +14,15 @@ export function useStore() {
   return store;
 }
 
+const playbackState = types.model(`PlaybackState`, {
+  currentTime: 0,
+  playing: false
+});
+
 export default types.model(`Store`, {
-  objects: types.optional(types.map(types.frozen()), {})
+  objects: types.optional(types.map(types.frozen()), {}),
+  currentTime: 0,
+  playbackState: types.frozen()
 })
 .actions(self => ({
   addObject(type) {
@@ -32,5 +39,14 @@ export default types.model(`Store`, {
   updateObject(id, json){
     json.id = id;
     self.objects.set(id, json);
+  },
+  setCurrentTime(time) {
+    self.currentTime = time;
+  },
+  togglePlayback(time) {
+    self.playbackState = {
+      currentTime: time,
+      playing: !self.playbackState.playing
+    }
   }
 }));
