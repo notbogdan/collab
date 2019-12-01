@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import Store, { Provider } from "./lib/store";
+import { Store, UI, Provider } from "./lib/store";
 import { onPatch, applyPatch } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
+import { fabric } from "fabric";
 
-const socket = socketIOClient(`http://94ebe6af.ngrok.io`);
+let isHandlingMessage = false;
+const socket = socketIOClient(`http://cc41ddce.ngrok.io`);
+const ui = UI.create({});
 const store = Store.create({
   playbackState: {
-    currentTime: 0,
+    updatedAt: 0,
     playing: false
   }
 });
@@ -19,15 +22,15 @@ const handleVideoUpdate = patch => {
   const video = document.querySelector(`video`);
   const handleSeeked = () => {
     video.removeEventListener(`onseeked`, handleSeeked)
-  };  
+  };
   if (patch.op === `replace` && patch.path === `/playbackState`) {
     // paused -> playing
     if (video.paused && patch.value.playing) {
-      if (video.currentTime !== patch.value.currentTime) {
+      if (video.currentTime !== patch.value.updatedAt) {
         video.addEventListener(`onseeked`, () => handleSeeked(() => {
           video.play();
         }))
-        video.currentTime = patch.value.currentTime
+        video.currentTime = patch.value.updatedAt
       } else {
         video.play();
       }
@@ -35,12 +38,11 @@ const handleVideoUpdate = patch => {
     // playing -> paused
     if (!video.paused && !patch.value.playing) {
       video.pause();
-      video.currentTime = patch.value.currentTime
+      video.currentTime = patch.value.updatedAt
     }
-    // seek
-    if (video.paused && !patch.value.playing) {
-      video.currentTime = patch.value.currentTime
-    }
+  }
+  if (patch.op === `replace` && patch.path === `/currentTime` && video.paused && !store.playbackState.playing) {
+      video.currentTime = patch.value;
   }
 }
 
@@ -50,8 +52,6 @@ const handlePatchSideEffects = patch => {
 }
 
 window.store = store;
-
-let isHandlingMessage = false;
 
 onPatch(store, patch => {
   handlePatchSideEffects(patch);
@@ -68,9 +68,9 @@ socket.on(`patching client`, patch => {
 });
 
 ReactDOM.render(
-<Provider value={store}>
-  <App />
-</Provider>, document.getElementById('root'));
+  <Provider value={{ store, ui }}>
+    <App />
+  </Provider>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

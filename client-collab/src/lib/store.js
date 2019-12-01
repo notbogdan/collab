@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { types, destroy } from "mobx-state-tree";
 import React, { useContext } from "react";
 import { fabric } from "fabric";
 
@@ -14,39 +14,57 @@ export function useStore() {
   return store;
 }
 
-const playbackState = types.model(`PlaybackState`, {
-  currentTime: 0,
-  playing: false
-});
-
-export default types.model(`Store`, {
-  objects: types.optional(types.map(types.frozen()), {}),
-  currentTime: 0,
-  playbackState: types.frozen()
+export const UI = types.model(`UI`, {
+  drawingMode: false,
+  zoomToolMode: false,
+  spotlightMode: false
 })
 .actions(self => ({
-  addObject(type) {
-    let circle = new fabric.Circle({
-      radius: 20, fill: 'green', left: 100, top: 100
-    });
-    circle = circle.toJSON();
+  toggleDrawingMode() {
+    self.drawingMode = !self.drawingMode;
+  },
+  toggleZoomToolMode() {
+    self.zoomToolMode = !self.zoomToolMode;
+  },
+  toggleSpotlightMode() {
+    self.spotlightMode = !self.spotlightMode;
+  }
+}));
+
+export const Store = types.model(`Store`, {
+  objects: types.optional(types.map(types.frozen()), {}),
+  currentTime: 0,
+  playbackState: types.frozen(),
+})
+.actions(self => ({
+  addObject(object) {
     const id = uid();
     self.objects.set(id, {
       id: id,
-      ...circle
+      ...object
     });
   },
   updateObject(id, json){
     json.id = id;
     self.objects.set(id, json);
   },
+  togglePlayback(time) {
+    self.playbackState = {
+      ...self.playbackState,
+      updatedAt: time,
+      playing: !self.playbackState.playing
+    }
+  },
   setCurrentTime(time) {
     self.currentTime = time;
   },
-  togglePlayback(time) {
+  setPlaybackState(state) {
     self.playbackState = {
-      currentTime: time,
-      playing: !self.playbackState.playing
+      ...self.playbackState,
+      ...state
     }
+  },
+  clearCanvas() {
+    self.objects.forEach(({ id }) => self.objects.delete(id));
   }
 }));
