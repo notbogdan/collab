@@ -9,7 +9,7 @@ import socketIOClient from 'socket.io-client';
 import { fabric } from "fabric";
 
 let isHandlingMessage = false;
-const socket = socketIOClient(`http://cc41ddce.ngrok.io`);
+const socket = socketIOClient(`http://178.62.86.47:3001`);
 const ui = UI.create({});
 const store = Store.create({
   playbackState: {
