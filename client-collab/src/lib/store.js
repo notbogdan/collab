@@ -68,3 +68,16 @@ export const Store = types.model(`Store`, {
     self.objects.forEach(({ id }) => self.objects.delete(id));
   }
 }));
+
+export const createStores = () => {
+  const ui = UI.create({});
+  const store = Store.create({
+    playbackState: {
+      updatedAt: 0,
+      playing: false
+    }
+  });
+  return {
+    ui, store
+  }
+}

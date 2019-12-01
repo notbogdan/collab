@@ -3,19 +3,32 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { Store, UI, Provider } from "./lib/store";
-import { onPatch, applyPatch } from "mobx-state-tree";
+import { Provider, createStores } from "./lib/store.js";
+import { onPatch, applyPatch, applySnapshot } from "mobx-state-tree";
 import socketIOClient from 'socket.io-client';
 import { fabric } from "fabric";
 
+const { store, ui } = createStores();
+
 let isHandlingMessage = false;
-const socket = socketIOClient(`http://178.62.86.47:3001`);
-const ui = UI.create({});
-const store = Store.create({
-  playbackState: {
-    updatedAt: 0,
-    playing: false
-  }
+const socket = socketIOClient(`http://178.62.86.47:3001/`);
+
+socket.emit(`stateRequest`, `newConnection`, snapshot => {
+  applySnapshot(store, snapshot);
+
+  onPatch(store, patch => {
+    handlePatchSideEffects(patch);
+    if (!isHandlingMessage) {
+      socket.emit(`patching`, patch);
+    }
+  });
+  
+  socket.on(`patching client`, patch => {
+    isHandlingMessage = true;
+    applyPatch(store, patch);
+    handlePatchSideEffects(patch);
+    isHandlingMessage = false;
+  });
 });
 
 const handleVideoUpdate = patch => {
@@ -52,20 +65,6 @@ const handlePatchSideEffects = patch => {
 }
 
 window.store = store;
-
-onPatch(store, patch => {
-  handlePatchSideEffects(patch);
-  if (!isHandlingMessage) {
-    socket.emit(`patching`, patch);
-  }
-});
-
-socket.on(`patching client`, patch => {
-  isHandlingMessage = true;
-  applyPatch(store, patch);
-  handlePatchSideEffects(patch);
-  isHandlingMessage = false;
-});
 
 ReactDOM.render(
   <Provider value={{ store, ui }}>

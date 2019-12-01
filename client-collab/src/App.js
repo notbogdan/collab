@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { observer, inject } from "mobx-react";
-import { useStore } from "./lib/store";
+import { useStore } from "./lib/store.js";
 import Canvas from "./components/Canvas";
 
 // import Textfield from './components/Textfield';
