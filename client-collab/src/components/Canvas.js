@@ -50,7 +50,7 @@ const Canvas = () => {
     window.__canvas = canvas;
 
     canvas.freeDrawingBrush.color = `#ffffff`;
-    canvas.freeDrawingBrush.width = 20;
+    canvas.freeDrawingBrush.width = 10;
 
     // Connect data store to fabric
     autorun(() => {
