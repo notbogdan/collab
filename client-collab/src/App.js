@@ -31,7 +31,7 @@ const App = props => {
           height: 720,
           width: 1280,
           position: `absolute`
-        }} preload="auto" src="/file_example_MP4_1280_10MG.mp4"></video>
+        }} preload="auto" src="/video.mp4"></video>
       <button onClick={() => store.togglePlayback(ref.current.currentTime)}>{store.playbackState.playing ? `Pause` : `Play`}</button>
       <label>
         {store.currentTime}

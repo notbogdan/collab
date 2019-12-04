@@ -8,20 +8,6 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT } from "../lib/constants";
 let updatingObject = false;
 let dragInProgress = false;
 
-// const onDrag = canvas => {
-//   if (dragInProgress) {
-//     console.log(`Dragging`)
-//   }
-// }
-
-// const endDrag = canvas => {
-//   dragInProgress = false;
-// }
-
-// const beginDrag = canvas => {
-//   dragInProgress = true;
-// };
-
 const onAddSpotlight = store => {
   const rect = new fabric.Rect({
     width: CANVAS_WIDTH * 2,
@@ -40,10 +26,15 @@ const onAddSpotlight = store => {
   store.addObject(rect.toJSON())
 }
 
+const addCircle = store => {
+
+
+};
+
 const Canvas = () => {
   const ref = useRef();
   const { store, ui } = useStore();
-  
+
   useEffect(() => {
     console.log(`Initializing state -> canvas autorun`);
     const canvas = new fabric.Canvas(ref.current);
@@ -92,7 +83,7 @@ const Canvas = () => {
   }, []);
   return (
     <div style={{ zIndex: 100, position: `relative` }}>
-      <div style={{position: `relative` }}>
+      <div style={{ position: `relative` }}>
         {ui.zoomToolMode && <div style={{ zIndex: 10, width: `100%`, height: `100%`, top: 0, left: 0, position: `absolute` }} onClick={(e) => {
           e.persist()
           ui.toggleZoomToolMode();
@@ -122,6 +113,30 @@ const Canvas = () => {
           <canvas ref={ref}></canvas>
         </div>
       </div>
+      <button disabled={ui.drawingMode || ui.zoomToolMode} onClick={() => {
+        var circle1 = new fabric.Circle({
+          radius: 65,
+          left: 0,
+          fill: `rgba(0,0,0,0)`,
+          stroke: 'red',
+          strokeWidth: 3
+        });
+        store.addObject(circle1.toJSON())
+      }}>Add circle</button>
+      <button disabled={ui.drawingMode || ui.zoomToolMode} onClick={() => {
+        var circle1 = new fabric.Rect({
+          left: 100,
+          top: 50,
+          fill: '#D81B60',
+          width: 50,
+          height: 50,
+          strokeWidth: 2,
+          stroke: "#880E4F",
+          rx: 10,
+          ry: 10,
+        });
+        store.addObject(circle1.toJSON())
+      }}>Add square</button>
       <button disabled={store.playbackState.playing || ui.drawingMode || ui.zoomToolMode} onClick={() => onAddSpotlight(store)}>Add spotlight</button>
       <button disabled={store.playbackState.playing || ui.drawingMode} onClick={ui.toggleZoomToolMode}>{ui.zoomToolMode ? <b>Zoom tool</b> : <>Zoom tool</>}</button>
       <button disabled={store.playbackState.playing || ui.zoomToolMode} onClick={ui.toggleDrawingMode}>{ui.drawingMode ? <b>Drawing tool</b> : <>Drawing tool</>}</button>
